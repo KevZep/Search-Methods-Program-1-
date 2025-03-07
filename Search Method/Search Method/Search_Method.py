@@ -4,6 +4,7 @@ import heapq
 from collections import deque
 from math import radians, sin, cos, sqrt, atan2
 
+# Load city data from a CSV file, storing city names with their latitude and longitude
 def load_cities(filename):
     cities = {}
     try:
@@ -19,6 +20,7 @@ def load_cities(filename):
         exit(1)
     return cities
 
+# Load adjacency list from a file, representing the connectivity of cities
 def load_adjacency(filename):
     adjacency_list = {}
     try:
@@ -35,6 +37,7 @@ def load_adjacency(filename):
         exit(1)
     return adjacency_list
 
+# Calculate the Haversine distance between two latitude-longitude coordinates
 def haversine(coord1, coord2):
     R = 6371  # Earth's radius in km
     lat1, lon1 = map(radians, coord1)
@@ -44,6 +47,8 @@ def haversine(coord1, coord2):
     a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
     return 2 * R * atan2(sqrt(a), sqrt(1 - a))
 
+
+# Brute force search (DFS) exploring all possible paths
 def brute_force_search(start, goal, adjacency_list, cities):
     stack = [(start, [start])]
     while stack:
@@ -55,6 +60,7 @@ def brute_force_search(start, goal, adjacency_list, cities):
                 stack.append((neighbor, path + [neighbor]))
     return None
 
+# Breadth-First Search (BFS) for shortest unweighted path
 def bfs(start, goal, adjacency_list):
     queue = deque([(start, [start])])
     while queue:
@@ -66,6 +72,7 @@ def bfs(start, goal, adjacency_list):
                 queue.append((neighbor, path + [neighbor]))
     return None
 
+# Depth-First Search (DFS) for pathfinding
 def dfs(start, goal, adjacency_list):
     stack = [(start, [start])]
     while stack:
@@ -77,6 +84,7 @@ def dfs(start, goal, adjacency_list):
                 stack.append((neighbor, path + [neighbor]))
     return None
 
+# Best-First Search using Haversine heuristic
 def best_first_search(start, goal, adjacency_list, cities):
     pq = [(haversine(cities[start], cities[goal]), start, [start])]
     while pq:
@@ -88,6 +96,7 @@ def best_first_search(start, goal, adjacency_list, cities):
                 heapq.heappush(pq, (haversine(cities[neighbor], cities[goal]), neighbor, path + [neighbor]))
     return None
 
+# A* Search using g(n) + h(n) heuristic
 def a_star_search(start, goal, adjacency_list, cities):
     pq = [(0, start, [start], 0)]  # (f-score, city, path, g-score)
     visited = {}
@@ -103,6 +112,7 @@ def a_star_search(start, goal, adjacency_list, cities):
                 heapq.heappush(pq, (new_f, neighbor, path + [neighbor], new_g))
     return None
 
+# Format the elapsed time for better readability
 def format_time(elapsed_time):
     if elapsed_time < 1e-6:
         return f"{elapsed_time * 1e9:.2f} ns"
